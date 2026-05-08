@@ -54,6 +54,20 @@ export default function Header() {
         <button className="p-2 text-slate-500 hover:bg-slate-100 rounded-lg transition-colors">
           <Settings size={20} />
         </button>
+        <div className="h-8 w-px bg-slate-200 mx-1"></div>
+        <div className="flex items-center gap-3 ml-2 group cursor-pointer" onClick={() => {
+          localStorage.removeItem("token");
+          localStorage.removeItem("user");
+          window.location.href = "/login";
+        }}>
+          <div className="w-9 h-9 bg-primary/10 rounded-full flex items-center justify-center text-primary font-bold">
+            A
+          </div>
+          <div className="hidden lg:block">
+            <p className="text-sm font-semibold text-slate-900 leading-none">Admin</p>
+            <p className="text-[10px] text-slate-500 mt-1 uppercase tracking-wider font-bold">Đăng xuất</p>
+          </div>
+        </div>
       </div>
     </header>
   );

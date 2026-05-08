@@ -7,11 +7,15 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Coffee.Data;
 using Coffee.Models;
+using Microsoft.AspNetCore.Authorization;
+
+using System.Security.Claims;
 
 namespace Coffee.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    [Authorize(Roles = "Admin,Manager,Staff")]
     [Tags("Quản lý chấm công")]
     public class AttendancesController : ControllerBase
     {
@@ -27,7 +31,20 @@ namespace Coffee.Controllers
         [EndpointSummary("Lấy danh sách chấm công")]
         public async Task<ActionResult<IEnumerable<Attendance>>> GetAttendances()
         {
-            return await _context.Attendances.Include(a => a.User).Include(a => a.Shift).ToListAsync();
+            var userRole = User.FindFirstValue(ClaimTypes.Role);
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+
+            var query = _context.Attendances.Include(a => a.User).Include(a => a.Shift).AsQueryable();
+
+            if (userRole == "Staff")
+            {
+                if (int.TryParse(userId, out int id))
+                {
+                    query = query.Where(a => a.UserId == id);
+                }
+            }
+
+            return await query.ToListAsync();
         }
 
         // GET: api/Attendances/5
@@ -35,11 +52,25 @@ namespace Coffee.Controllers
         [EndpointSummary("Lấy chi tiết chấm công theo ID")]
         public async Task<ActionResult<Attendance>> GetAttendance(int id)
         {
-            var attendance = await _context.Attendances.Include(a => a.User).Include(a => a.Shift).FirstOrDefaultAsync(m => m.Id == id);
+            var userRole = User.FindFirstValue(ClaimTypes.Role);
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+
+            var attendance = await _context.Attendances
+                .Include(a => a.User)
+                .Include(a => a.Shift)
+                .FirstOrDefaultAsync(m => m.Id == id);
 
             if (attendance == null)
             {
                 return NotFound();
+            }
+
+            if (userRole == "Staff")
+            {
+                if (int.TryParse(userId, out int uId) && attendance.UserId != uId)
+                {
+                    return Forbid();
+                }
             }
 
             return attendance;
@@ -47,6 +78,7 @@ namespace Coffee.Controllers
 
         // PUT: api/Attendances/5
         [HttpPut("{id}")]
+        [Authorize(Roles = "Admin,Manager")]
         [EndpointSummary("Cập nhật thông tin chấm công")]
         public async Task<IActionResult> PutAttendance(int id, Attendance attendance)
         {
@@ -89,6 +121,7 @@ namespace Coffee.Controllers
 
         // DELETE: api/Attendances/5
         [HttpDelete("{id}")]
+        [Authorize(Roles = "Admin,Manager")]
         [EndpointSummary("Xóa lượt chấm công")]
         public async Task<IActionResult> DeleteAttendance(int id)
         {

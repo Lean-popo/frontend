@@ -8,10 +8,13 @@ using Microsoft.EntityFrameworkCore;
 using Coffee.Data;
 using Coffee.Models;
 
+using Microsoft.AspNetCore.Authorization;
+
 namespace Coffee.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    [Authorize]
     [Tags("Quản lý nghỉ phép")]
     public class LeaveRequestsController : ControllerBase
     {
@@ -45,6 +48,7 @@ namespace Coffee.Controllers
 
         // PUT: api/LeaveRequests/5
         [HttpPut("{id}")]
+        [Authorize(Roles = "Admin,Manager")]
         public async Task<IActionResult> PutLeaveRequest(int id, LeaveRequest leaveRequest)
         {
             if (id != leaveRequest.Id)

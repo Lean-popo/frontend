@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect } from "react";
 import { Plus, Search, UserMinus, Download, Trash2, CheckCircle, Clock, Pencil, MoreVertical } from "lucide-react";
+import { useRouter } from "next/navigation";
 import Modal from "@/components/Modal";
 import { api } from "@/lib/api";
 
@@ -23,6 +24,8 @@ export default function ResignationPage() {
     status: "Chờ duyệt"
   });
 
+  const router = useRouter();
+
   useEffect(() => {
     const fetchUsers = async () => {
       try {
@@ -31,12 +34,15 @@ export default function ResignationPage() {
         if (data.length > 0 && !formData.employee) {
           setFormData(prev => ({ ...prev, employee: data[0].fullName }));
         }
-      } catch (error) {
+      } catch (error: any) {
         console.error("Failed to fetch users:", error);
+        if (error.message.includes("401") || error.message.includes("Unauthorized")) {
+          router.push("/login");
+        }
       }
     };
     fetchUsers();
-  }, []);
+  }, [router]);
 
   const handleOpenModal = (item?: any) => {
     if (item) {

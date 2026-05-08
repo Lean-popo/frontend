@@ -8,10 +8,13 @@ using Microsoft.EntityFrameworkCore;
 using Coffee.Data;
 using Coffee.Models;
 
+using Microsoft.AspNetCore.Authorization;
+
 namespace Coffee.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    [Authorize(Roles = "Admin,Manager")]
     [Tags("Quản lý lương")]
     public class PayrollsController : ControllerBase
     {

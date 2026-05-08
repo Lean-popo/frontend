@@ -7,12 +7,14 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Coffee.Data;
 using Coffee.Models;
+using Microsoft.AspNetCore.Authorization;
 
 namespace Coffee.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    [Tags("Phân công ca làm")]
+    [Authorize(Roles = "Admin,Manager")]
+    [Tags("Phân ca làm việc")]
     public class ShiftAssignmentsController : ControllerBase
     {
         private readonly AppDbContext _context;

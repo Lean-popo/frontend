@@ -15,7 +15,15 @@ export default function LeaveRequestsClient({ initialRequests }: { initialReques
   const [requests, setRequests] = useState(initialRequests);
   const router = useRouter();
 
+  const userString = typeof window !== 'undefined' ? localStorage.getItem('user') : null;
+  const user = userString ? JSON.parse(userString) : null;
+  const isManagerOrAdmin = user?.role === "Admin" || user?.role === "Manager";
+
   const handleStatusUpdate = async (request: any, status: number) => {
+    if (!isManagerOrAdmin) {
+      alert("Bạn không có quyền thực hiện hành động này.");
+      return;
+    }
     try {
       await api.updateLeaveRequest(request.id, {
         ...request,
@@ -77,7 +85,7 @@ export default function LeaveRequestsClient({ initialRequests }: { initialReques
             </div>
 
             <div className="flex gap-2">
-              {request.status === 0 && (
+              {request.status === 0 && isManagerOrAdmin && (
                 <>
                   <button 
                     onClick={() => handleStatusUpdate(request, 2)}

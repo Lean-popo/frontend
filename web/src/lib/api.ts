@@ -4,11 +4,14 @@ export async function fetchApi(endpoint: string, options: RequestInit = {}) {
   const controller = new AbortController();
   const timeoutId = setTimeout(() => controller.abort(), 10000); // 10s timeout
 
+  const token = typeof window !== 'undefined' ? localStorage.getItem('token') : null;
+
   try {
     const response = await fetch(`${API_BASE_URL}${endpoint}`, {
       ...options,
       headers: {
         "Content-Type": "application/json",
+        ...(token ? { "Authorization": `Bearer ${token}` } : {}),
         ...options.headers,
       },
       cache: "no-store",
@@ -36,6 +39,10 @@ export async function fetchApi(endpoint: string, options: RequestInit = {}) {
 }
 
 export const api = {
+  // Auth
+  login: (data: any) => fetchApi("/Auth/login", { method: "POST", body: JSON.stringify(data) }),
+  register: (data: any) => fetchApi("/Auth/register", { method: "POST", body: JSON.stringify(data) }),
+
   // Users
   getUsers: () => fetchApi("/Users"),
   createUser: (data: any) => fetchApi("/Users", { method: "POST", body: JSON.stringify(data) }),

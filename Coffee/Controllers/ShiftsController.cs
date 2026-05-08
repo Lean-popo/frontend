@@ -7,12 +7,14 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Coffee.Data;
 using Coffee.Models;
+using Microsoft.AspNetCore.Authorization;
 
 namespace Coffee.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    [Tags("Quản lý ca làm")]
+    [Authorize(Roles = "Admin,Manager,Staff")]
+    [Tags("Quản lý ca làm việc")]
     public class ShiftsController : ControllerBase
     {
         private readonly AppDbContext _context;
@@ -47,6 +49,7 @@ namespace Coffee.Controllers
 
         // PUT: api/Shifts/5
         [HttpPut("{id}")]
+        [Authorize(Roles = "Admin,Manager")]
         [EndpointSummary("Cập nhật thông tin ca làm")]
         public async Task<IActionResult> PutShift(int id, Shift shift)
         {
@@ -78,6 +81,7 @@ namespace Coffee.Controllers
 
         // POST: api/Shifts
         [HttpPost]
+        [Authorize(Roles = "Admin,Manager")]
         [EndpointSummary("Thêm mới ca làm việc")]
         public async Task<ActionResult<Shift>> PostShift(Shift shift)
         {
@@ -89,6 +93,7 @@ namespace Coffee.Controllers
 
         // DELETE: api/Shifts/5
         [HttpDelete("{id}")]
+        [Authorize(Roles = "Admin,Manager")]
         [EndpointSummary("Xóa ca làm việc")]
         public async Task<IActionResult> DeleteShift(int id)
         {

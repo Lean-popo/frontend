@@ -8,10 +8,13 @@ using Microsoft.EntityFrameworkCore;
 using Coffee.Data;
 using Coffee.Models;
 
+using Microsoft.AspNetCore.Authorization;
+
 namespace Coffee.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    [Authorize(Roles = "Admin,Manager")]
     [Tags("Quản lý nhân viên")]
     public class UsersController : ControllerBase
     {
@@ -57,6 +60,7 @@ namespace Coffee.Controllers
 
         // PUT: api/Users/5
         [HttpPut("{id}")]
+        [Authorize(Roles = "Admin")]
         [EndpointSummary("Cập nhật thông tin nhân viên")]
         public async Task<IActionResult> PutUser(int id, User user)
         {
@@ -126,6 +130,7 @@ namespace Coffee.Controllers
 
         // POST: api/Users
         [HttpPost]
+        [Authorize(Roles = "Admin")]
         [EndpointSummary("Thêm mới nhân viên")]
         public async Task<ActionResult<User>> PostUser(User user)
         {
@@ -162,6 +167,7 @@ namespace Coffee.Controllers
 
         // DELETE: api/Users/5
         [HttpDelete("{id}")]
+        [Authorize(Roles = "Admin")]
         [EndpointSummary("Xóa nhân viên")]
         public async Task<IActionResult> DeleteUser(int id)
         {

@@ -5,6 +5,13 @@ import Sidebar from "@/components/Sidebar";
 import Header from "@/components/Header";
 
 export default function LayoutWrapper({ children }: { children: React.ReactNode }) {
+  const pathname = usePathname();
+  const isAuthPage = pathname === "/login" || pathname === "/register";
+
+  if (isAuthPage) {
+    return <main className="min-h-screen">{children}</main>;
+  }
+
   return (
     <div className="flex min-h-screen bg-slate-100">
       <Sidebar />

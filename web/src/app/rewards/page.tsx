@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
+import { useRouter } from "next/navigation";
 import { Plus, Search, Award, AlertCircle, Download, Trash2, Settings, Pencil, MoreVertical } from "lucide-react";
 import Modal from "@/components/Modal";
 import { api } from "@/lib/api";
@@ -19,6 +20,8 @@ export default function RewardsPage() {
     date: new Date().toISOString().split('T')[0]
   });
 
+  const router = useRouter();
+
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -31,12 +34,15 @@ export default function RewardsPage() {
         if (usersData.length > 0) {
           setFormData(prev => ({ ...prev, userId: usersData[0].id }));
         }
-      } catch (error) {
+      } catch (error: any) {
         console.error("Failed to fetch data:", error);
+        if (error.message.includes("401") || error.message.includes("Unauthorized")) {
+          router.push("/login");
+        }
       }
     };
     fetchData();
-  }, []);
+  }, [router]);
 
   const handleOpenModal = (item?: any) => {
     if (item) {

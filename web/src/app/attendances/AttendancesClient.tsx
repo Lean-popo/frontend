@@ -28,8 +28,12 @@ export default function AttendancesClient({
   const [loading, setLoading] = useState(false);
   const router = useRouter();
 
+  const userString = typeof window !== 'undefined' ? localStorage.getItem('user') : null;
+  const currentUser = userString ? JSON.parse(userString) : null;
+  const isManagerOrAdmin = currentUser?.role === "Admin" || currentUser?.role === "Manager";
+
   const [formData, setFormData] = useState({
-    userId: users[0]?.id || 0,
+    userId: currentUser?.role === "Staff" ? currentUser.id : (users[0]?.id || 0),
     shiftId: shifts[0]?.id || 0,
     checkIn: new Date().toISOString().slice(0, 16),
     checkOut: "",
@@ -38,6 +42,10 @@ export default function AttendancesClient({
 
   const handleOpenModal = (item?: any) => {
     if (item) {
+      if (!isManagerOrAdmin && item.userId !== currentUser?.id) {
+        alert("Bạn không có quyền chỉnh sửa chấm công của người khác.");
+        return;
+      }
       setEditingItem(item);
       setFormData({
         userId: item.userId,
@@ -49,7 +57,7 @@ export default function AttendancesClient({
     } else {
       setEditingItem(null);
       setFormData({
-        userId: users[0]?.id || 0,
+        userId: currentUser?.role === "Staff" ? currentUser.id : (users[0]?.id || 0),
         shiftId: shifts[0]?.id || 0,
         checkIn: new Date().toISOString().slice(0, 16),
         checkOut: "",
@@ -185,20 +193,22 @@ export default function AttendancesClient({
                     </span>
                   </td>
                   <td className="px-6 py-4 text-right">
-                    <div className="flex justify-end gap-2">
-                      <button 
-                        onClick={() => handleOpenModal(item)}
-                        className="p-2 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-lg text-slate-400 hover:text-indigo-500 transition-colors"
-                      >
-                        <Pencil size={18} />
-                      </button>
-                      <button 
-                        onClick={() => handleDelete(item.id)}
-                        className="p-2 hover:bg-rose-50 dark:hover:bg-rose-900/20 rounded-lg text-slate-400 hover:text-rose-500 transition-colors"
-                      >
-                        <Trash2 size={18} />
-                      </button>
-                    </div>
+                    {isManagerOrAdmin && (
+                      <div className="flex justify-end gap-2">
+                        <button 
+                          onClick={() => handleOpenModal(item)}
+                          className="p-2 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-lg text-slate-400 hover:text-indigo-500 transition-colors"
+                        >
+                          <Pencil size={18} />
+                        </button>
+                        <button 
+                          onClick={() => handleDelete(item.id)}
+                          className="p-2 hover:bg-rose-50 dark:hover:bg-rose-900/20 rounded-lg text-slate-400 hover:text-rose-500 transition-colors"
+                        >
+                          <Trash2 size={18} />
+                        </button>
+                      </div>
+                    )}
                   </td>
                 </tr>
               ))}
@@ -217,11 +227,16 @@ export default function AttendancesClient({
             <label className="text-sm font-bold text-slate-600">Nhân viên</label>
             <select 
               required
-              className="w-full px-4 py-3 rounded-xl border-slate-200 focus:ring-2 focus:ring-indigo-500 outline-none bg-slate-50"
+              disabled={!isManagerOrAdmin}
+              className="w-full px-4 py-3 rounded-xl border-slate-200 focus:ring-2 focus:ring-indigo-500 outline-none bg-slate-50 disabled:opacity-70"
               value={formData.userId}
               onChange={(e) => setFormData({...formData, userId: parseInt(e.target.value)})}
             >
-              {users.map(u => <option key={u.id} value={u.id}>{u.fullName}</option>)}
+              {currentUser?.role === "Staff" ? (
+                <option value={currentUser.id}>{currentUser.fullName}</option>
+              ) : (
+                users.map(u => <option key={u.id} value={u.id}>{u.fullName}</option>)
+              )}
             </select>
           </div>
           <div className="space-y-2">

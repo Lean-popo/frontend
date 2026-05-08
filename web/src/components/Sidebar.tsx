@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { 
@@ -29,33 +29,49 @@ interface MenuItem {
   name: string;
   icon: any;
   href?: string;
-  subItems?: { name: string; href: string; icon?: any }[];
+  subItems?: { name: string; href: string; icon?: any; roles?: string[] }[];
+  roles?: string[];
 }
 
 const menuItems: MenuItem[] = [
-  { name: "Trang chủ", icon: Home, href: "/dashboard" },
+  { name: "Trang chủ", icon: Home, href: "/dashboard", roles: ["Admin", "Manager", "Staff"] },
   { 
     name: "Quản lý nhân sự", 
     icon: Users, 
+    roles: ["Admin"],
     subItems: [
       { name: "Danh sách nhân viên", href: "/users", icon: List },
       { name: "Quản lý khen thưởng/kỷ luật", href: "/rewards", icon: Award },
       { name: "Quản lý thôi việc", href: "/resignation", icon: UserMinus },
     ]
   },
-  { name: "Quản lý chấm công", icon: CalendarClock, href: "/attendances" },
-  { name: "Tính lương", icon: Calculator, href: "/payrolls" },
+  { name: "Quản lý chấm công", icon: CalendarClock, href: "/attendances", roles: ["Admin", "Manager", "Staff"] },
+  { name: "Quản lý nghỉ phép", icon: CalendarClock, href: "/leave-requests", roles: ["Admin", "Manager"] },
+  { name: "Tính lương", icon: Calculator, href: "/payrolls", roles: ["Admin", "Manager"] },
 ];
 
 export default function Sidebar() {
   const pathname = usePathname();
   const [expandedItems, setExpandedItems] = useState<string[]>(["Quản lý nhân sự"]);
+  
+  const [user, setUser] = useState<any>(null);
+
+  useEffect(() => {
+    const userData = localStorage.getItem("user");
+    if (userData) {
+      setUser(JSON.parse(userData));
+    }
+  }, []);
 
   const toggleExpand = (name: string) => {
     setExpandedItems(prev => 
       prev.includes(name) ? prev.filter(i => i !== name) : [...prev, name]
     );
   };
+
+  const filteredMenuItems = menuItems.filter(item => 
+    !item.roles || (user && item.roles.includes(user.role))
+  );
 
   return (
     <aside className="w-64 bg-[#004d4a] text-white flex flex-col h-screen sticky top-0 z-50">
@@ -64,7 +80,7 @@ export default function Sidebar() {
       </div>
 
       <nav className="flex-1 overflow-y-auto py-4">
-        {menuItems.map((item) => {
+        {filteredMenuItems.map((item) => {
           const isExpanded = expandedItems.includes(item.name);
           const hasSubItems = item.subItems && item.subItems.length > 0;
           const isActive = pathname === item.href || item.subItems?.some(si => pathname === si.href);
@@ -133,15 +149,22 @@ export default function Sidebar() {
 
       <div className="p-4 border-t border-[#006d69]/30">
         <div className="flex items-center gap-3 mb-4 px-2">
-          <div className="w-8 h-8 rounded-full bg-emerald-600 flex items-center justify-center text-xs font-bold">
-            AD
+          <div className="w-8 h-8 rounded-full bg-emerald-600 flex items-center justify-center text-xs font-bold uppercase">
+            {user?.fullName?.charAt(0) || "U"}
           </div>
           <div className="flex flex-col">
-            <span className="text-xs font-bold">Quản trị viên</span>
-            <span className="text-[10px] text-emerald-50/50">Admin Account</span>
+            <span className="text-xs font-bold">{user?.fullName || "Người dùng"}</span>
+            <span className="text-[10px] text-emerald-50/50 uppercase tracking-wider">{user?.role || "Staff"}</span>
           </div>
         </div>
-        <button className="w-full flex items-center gap-3 px-4 py-2 rounded-lg text-emerald-50/50 hover:text-white hover:bg-[#006d69]/30 transition-colors text-sm">
+        <button 
+          onClick={() => {
+            localStorage.removeItem("token");
+            localStorage.removeItem("user");
+            window.location.href = "/login";
+          }}
+          className="w-full flex items-center gap-3 px-4 py-2 rounded-lg text-emerald-50/50 hover:text-white hover:bg-[#006d69]/30 transition-colors text-sm"
+        >
           <LogOut size={18} />
           <span>Đăng xuất</span>
         </button>
