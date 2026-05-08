@@ -15,8 +15,7 @@ namespace Coffee.Data
         public DbSet<Attendance> Attendances { get; set; }
         public DbSet<Payroll> Payrolls { get; set; }
         public DbSet<LeaveRequest> LeaveRequests { get; set; }
-        public DbSet<Category> Categories { get; set; }
-        public DbSet<Product> Products { get; set; }
+        public DbSet<Reward> Rewards { get; set; }
         public DbSet<Config> Configs { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -93,22 +92,6 @@ namespace Coffee.Data
             modelBuilder.Entity<LeaveRequest>().HasData(
                 new LeaveRequest { Id = 1, UserId = 3, LeaveDate = new DateTime(2024, 4, 20), Reason = "Family business", Status = LeaveRequestStatus.Pending },
                 new LeaveRequest { Id = 2, UserId = 2, LeaveDate = new DateTime(2024, 4, 15), Reason = "Sick leave", Status = LeaveRequestStatus.Approved }
-            );
-
-            // Seed Categories
-            modelBuilder.Entity<Category>().HasData(
-                new Category { Id = 1, Name = "Coffee", Description = "Premium roasted beans" },
-                new Category { Id = 2, Name = "Tea", Description = "Organic herbal teas" },
-                new Category { Id = 3, Name = "Pastry", Description = "Freshly baked daily" }
-            );
-
-            // Seed Products
-            modelBuilder.Entity<Product>().HasData(
-                new Product { Id = 1, Name = "Espresso", Description = "Strong and bold single shot", Price = 35000m, CategoryId = 1, ImageUrl = "https://images.unsplash.com/photo-1510591509098-f4fdc6d0ff04?q=80&w=500&auto=format&fit=crop" },
-                new Product { Id = 2, Name = "Cappuccino", Description = "Espresso with steamed milk foam", Price = 45000m, CategoryId = 1, ImageUrl = "https://images.unsplash.com/photo-1534778101976-62847782c213?q=80&w=500&auto=format&fit=crop" },
-                new Product { Id = 3, Name = "Matcha Latte", Description = "Premium Japanese green tea", Price = 55000m, CategoryId = 2, ImageUrl = "https://images.unsplash.com/photo-1515823064-d6e0c04616a7?q=80&w=500&auto=format&fit=crop" },
-                new Product { Id = 4, Name = "Butter Croissant", Description = "Flaky and buttery French pastry", Price = 30000m, CategoryId = 3, ImageUrl = "https://images.unsplash.com/photo-1555507036-ab1f4038808a?q=80&w=500&auto=format&fit=crop" },
-                new Product { Id = 5, Name = "Cold Brew", Description = "12-hour steeped signature coffee", Price = 50000m, CategoryId = 1, ImageUrl = "https://images.unsplash.com/photo-1517701604599-bb29b565090c?q=80&w=500&auto=format&fit=crop" }
             );
 
             // Seed Configs

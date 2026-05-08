@@ -12,6 +12,7 @@ namespace Coffee.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    [Tags("Cấu hình hệ thống")]
     public class ConfigsController : ControllerBase
     {
         private readonly AppDbContext _context;

@@ -12,6 +12,7 @@ namespace Coffee.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    [Tags("Quản lý lương")]
     public class PayrollsController : ControllerBase
     {
         private readonly AppDbContext _context;
@@ -23,6 +24,7 @@ namespace Coffee.Controllers
 
         // GET: api/Payrolls
         [HttpGet]
+        [EndpointSummary("Lấy danh sách bảng lương")]
         public async Task<ActionResult<IEnumerable<Payroll>>> GetPayrolls()
         {
             return await _context.Payrolls.Include(p => p.User).ToListAsync();
@@ -30,6 +32,7 @@ namespace Coffee.Controllers
 
         // GET: api/Payrolls/5
         [HttpGet("{id}")]
+        [EndpointSummary("Lấy chi tiết lương theo ID")]
         public async Task<ActionResult<Payroll>> GetPayroll(int id)
         {
             var payroll = await _context.Payrolls.Include(p => p.User).FirstOrDefaultAsync(m => m.Id == id);
@@ -44,6 +47,7 @@ namespace Coffee.Controllers
 
         // PUT: api/Payrolls/5
         [HttpPut("{id}")]
+        [EndpointSummary("Cập nhật thông tin lương")]
         public async Task<IActionResult> PutPayroll(int id, Payroll payroll)
         {
             if (id != payroll.Id)
@@ -74,6 +78,7 @@ namespace Coffee.Controllers
 
         // POST: api/Payrolls
         [HttpPost]
+        [EndpointSummary("Tính lương mới cho nhân viên")]
         public async Task<ActionResult<Payroll>> PostPayroll(Payroll payroll)
         {
             _context.Payrolls.Add(payroll);
@@ -84,6 +89,7 @@ namespace Coffee.Controllers
 
         // DELETE: api/Payrolls/5
         [HttpDelete("{id}")]
+        [EndpointSummary("Xóa bảng lương")]
         public async Task<IActionResult> DeletePayroll(int id)
         {
             var payroll = await _context.Payrolls.FindAsync(id);

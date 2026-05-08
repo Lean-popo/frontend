@@ -12,6 +12,7 @@ namespace Coffee.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    [Tags("Quản lý nhân viên")]
     public class UsersController : ControllerBase
     {
         private readonly AppDbContext _context;
@@ -23,21 +24,27 @@ namespace Coffee.Controllers
 
         // GET: api/Users
         [HttpGet]
+        [EndpointSummary("Lấy danh sách nhân viên")]
         public async Task<ActionResult<IEnumerable<User>>> GetUsers()
         {
             return await _context.Users
                 .Include(u => u.UserRoles)
                 .ThenInclude(ur => ur.Role)
+                .Include(u => u.ShiftAssignments)
+                .ThenInclude(sa => sa.Shift)
                 .ToListAsync();
         }
 
         // GET: api/Users/5
         [HttpGet("{id}")]
+        [EndpointSummary("Lấy chi tiết nhân viên theo ID")]
         public async Task<ActionResult<User>> GetUser(int id)
         {
             var user = await _context.Users
                 .Include(u => u.UserRoles)
                 .ThenInclude(ur => ur.Role)
+                .Include(u => u.ShiftAssignments)
+                .ThenInclude(sa => sa.Shift)
                 .FirstOrDefaultAsync(u => u.Id == id);
 
             if (user == null)
@@ -50,6 +57,7 @@ namespace Coffee.Controllers
 
         // PUT: api/Users/5
         [HttpPut("{id}")]
+        [EndpointSummary("Cập nhật thông tin nhân viên")]
         public async Task<IActionResult> PutUser(int id, User user)
         {
             if (id != user.Id)
@@ -59,6 +67,7 @@ namespace Coffee.Controllers
 
             var existingUser = await _context.Users
                 .Include(u => u.UserRoles)
+                .Include(u => u.ShiftAssignments)
                 .FirstOrDefaultAsync(u => u.Id == id);
 
             if (existingUser == null)
@@ -86,6 +95,16 @@ namespace Coffee.Controllers
                 }
             }
 
+            // Update ShiftAssignments if provided
+            if (user.ShiftAssignments != null && user.ShiftAssignments.Any())
+            {
+                _context.ShiftAssignments.RemoveRange(existingUser.ShiftAssignments);
+                foreach (var sa in user.ShiftAssignments)
+                {
+                    existingUser.ShiftAssignments.Add(new ShiftAssignment { UserId = id, ShiftId = sa.ShiftId });
+                }
+            }
+
             try
             {
                 await _context.SaveChangesAsync();
@@ -107,11 +126,15 @@ namespace Coffee.Controllers
 
         // POST: api/Users
         [HttpPost]
+        [EndpointSummary("Thêm mới nhân viên")]
         public async Task<ActionResult<User>> PostUser(User user)
         {
-            // Extract roles to add later or add them to the entity
+            // Extract roles and shifts to add after user creation
             var rolesToAdd = user.UserRoles?.ToList();
+            var shiftsToAdd = user.ShiftAssignments?.ToList();
+            
             user.UserRoles = new List<UserRole>();
+            user.ShiftAssignments = new List<ShiftAssignment>();
 
             _context.Users.Add(user);
             await _context.SaveChangesAsync();
@@ -122,14 +145,24 @@ namespace Coffee.Controllers
                 {
                     _context.UserRoles.Add(new UserRole { UserId = user.Id, RoleId = role.RoleId });
                 }
-                await _context.SaveChangesAsync();
             }
+
+            if (shiftsToAdd != null && shiftsToAdd.Any())
+            {
+                foreach (var sa in shiftsToAdd)
+                {
+                    _context.ShiftAssignments.Add(new ShiftAssignment { UserId = user.Id, ShiftId = sa.ShiftId });
+                }
+            }
+
+            await _context.SaveChangesAsync();
 
             return CreatedAtAction("GetUser", new { id = user.Id }, user);
         }
 
         // DELETE: api/Users/5
         [HttpDelete("{id}")]
+        [EndpointSummary("Xóa nhân viên")]
         public async Task<IActionResult> DeleteUser(int id)
         {
             var user = await _context.Users.FindAsync(id);

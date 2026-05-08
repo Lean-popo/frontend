@@ -1,93 +1,150 @@
 "use client";
 
+import React, { useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { 
-  LayoutDashboard, 
+  Home, 
   Users, 
-  CalendarCheck, 
-  Wallet, 
-  FileText, 
+  Fingerprint, 
+  CalendarClock, 
+  Calculator,
+  ChevronDown,
+  ChevronRight,
+  List,
+  Award,
+  UserMinus,
   Settings,
-  Coffee
+  LogOut
 } from "lucide-react";
 import { clsx, type ClassValue } from "clsx";
 import { twMerge } from "tailwind-merge";
-import { useConfig } from "./ConfigContext";
+import { motion, AnimatePresence } from "framer-motion";
 
 function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
 }
 
-const menuItems = [
-  { name: "Bảng điều khiển", icon: LayoutDashboard, href: "/dashboard" },
-  { name: "Chấm công", icon: CalendarCheck, href: "/attendances" },
-  { name: "Bảng lương", icon: Wallet, href: "/payrolls" },
-  { name: "Nghỉ phép", icon: FileText, href: "/leave-requests" },
-  { name: "Nhân viên", icon: Users, href: "/users" },
-  { name: "Cài đặt", icon: Settings, href: "/settings" },
+interface MenuItem {
+  name: string;
+  icon: any;
+  href?: string;
+  subItems?: { name: string; href: string; icon?: any }[];
+}
+
+const menuItems: MenuItem[] = [
+  { name: "Trang chủ", icon: Home, href: "/dashboard" },
+  { 
+    name: "Quản lý nhân sự", 
+    icon: Users, 
+    subItems: [
+      { name: "Danh sách nhân viên", href: "/users", icon: List },
+      { name: "Quản lý khen thưởng/kỷ luật", href: "/rewards", icon: Award },
+      { name: "Quản lý thôi việc", href: "/resignation", icon: UserMinus },
+    ]
+  },
+  { name: "Quản lý chấm công", icon: CalendarClock, href: "/attendances" },
+  { name: "Tính lương", icon: Calculator, href: "/payrolls" },
 ];
 
 export default function Sidebar() {
   const pathname = usePathname();
-  const { shopName } = useConfig();
+  const [expandedItems, setExpandedItems] = useState<string[]>(["Quản lý nhân sự"]);
 
-  // Hide sidebar on the landing page
-  if (pathname === "/") return null;
+  const toggleExpand = (name: string) => {
+    setExpandedItems(prev => 
+      prev.includes(name) ? prev.filter(i => i !== name) : [...prev, name]
+    );
+  };
 
   return (
-    <aside className="fixed left-0 top-0 h-screen w-64 glass border-r z-50 flex flex-col">
-      <div className="p-6 flex items-center gap-3">
-        <div className="w-10 h-10 premium-gradient rounded-xl flex items-center justify-center text-white shadow-lg">
-          <Coffee size={24} />
-        </div>
-        <span className="text-xl font-bold tracking-tight font-outfit uppercase">{shopName}</span>
+    <aside className="w-64 bg-[#004d4a] text-white flex flex-col h-screen sticky top-0 z-50">
+      <div className="h-14 flex items-center px-6 bg-[#006d69] font-bold text-lg tracking-wider border-b border-[#004d4a]/20">
+        TIME365
       </div>
 
-      <nav className="flex-1 px-4 space-y-2 mt-4">
+      <nav className="flex-1 overflow-y-auto py-4">
         {menuItems.map((item) => {
-          const isActive = pathname === item.href || (item.href === "/dashboard" && pathname === "/dashboard");
-          const href = item.href;
-          
+          const isExpanded = expandedItems.includes(item.name);
+          const hasSubItems = item.subItems && item.subItems.length > 0;
+          const isActive = pathname === item.href || item.subItems?.some(si => pathname === si.href);
+
           return (
-            <Link
-              key={href}
-              href={href}
-              className={cn(
-                "flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-200 group",
-                isActive 
-                  ? "bg-indigo-500 text-white shadow-md shadow-indigo-200 dark:shadow-none" 
-                  : "hover:bg-indigo-50 text-slate-600 dark:text-slate-400 dark:hover:bg-slate-800"
+            <div key={item.name} className="px-2 mb-1">
+              {hasSubItems ? (
+                <div>
+                  <button
+                    onClick={() => toggleExpand(item.name)}
+                    className={cn(
+                      "w-full flex items-center justify-between px-4 py-2.5 rounded-lg transition-colors group",
+                      isActive ? "bg-[#006d69] text-white" : "hover:bg-[#006d69]/50 text-emerald-50/70 hover:text-white"
+                    )}
+                  >
+                    <div className="flex items-center gap-3">
+                      <item.icon size={20} />
+                      <span className="text-sm font-medium">{item.name}</span>
+                    </div>
+                    {isExpanded ? <ChevronDown size={16} /> : <ChevronRight size={16} />}
+                  </button>
+                  <AnimatePresence>
+                    {isExpanded && (
+                      <motion.div
+                        initial={{ height: 0, opacity: 0 }}
+                        animate={{ height: "auto", opacity: 1 }}
+                        exit={{ height: 0, opacity: 0 }}
+                        className="overflow-hidden ml-4 mt-1 space-y-1"
+                      >
+                        {item.subItems?.map((sub) => {
+                          const isSubActive = pathname === sub.href;
+                          return (
+                            <Link
+                              key={sub.name}
+                              href={sub.href}
+                              className={cn(
+                                "flex items-center gap-3 px-4 py-2 rounded-lg text-xs transition-colors",
+                                isSubActive ? "text-white font-bold" : "text-emerald-50/50 hover:text-white hover:bg-[#006d69]/30"
+                              )}
+                            >
+                              <div className="w-1.5 h-1.5 rounded-full bg-emerald-50/30" />
+                              <span>{sub.name}</span>
+                            </Link>
+                          );
+                        })}
+                      </motion.div>
+                    )}
+                  </AnimatePresence>
+                </div>
+              ) : (
+                <Link
+                  href={item.href || "#"}
+                  className={cn(
+                    "flex items-center gap-3 px-4 py-2.5 rounded-lg transition-colors",
+                    pathname === item.href ? "bg-[#006d69] text-white shadow-inner" : "hover:bg-[#006d69]/50 text-emerald-50/70 hover:text-white"
+                  )}
+                >
+                  <item.icon size={20} />
+                  <span className="text-sm font-medium">{item.name}</span>
+                </Link>
               )}
-            >
-              <item.icon size={20} className={cn(isActive ? "text-white" : "group-hover:text-indigo-500")} />
-              <span className="font-medium">{item.name}</span>
-            </Link>
+            </div>
           );
         })}
-        
-        {/* Link back to Live Site */}
-        <div className="pt-4 mt-4 border-t border-slate-100 dark:border-slate-800">
-          <Link
-            href="/"
-            className="flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-emerald-50 text-emerald-600 transition-all duration-200"
-          >
-            <LayoutDashboard size={20} />
-            <span className="font-medium">Xem Trang Chủ</span>
-          </Link>
-        </div>
       </nav>
 
-      <div className="p-4 border-t border-slate-100 dark:border-slate-800">
-        <div className="flex items-center gap-3 p-2">
-          <div className="w-10 h-10 rounded-full bg-slate-200 dark:bg-slate-700 overflow-hidden">
-            <img src="https://ui-avatars.com/api/?name=Admin&background=random" alt="User" />
+      <div className="p-4 border-t border-[#006d69]/30">
+        <div className="flex items-center gap-3 mb-4 px-2">
+          <div className="w-8 h-8 rounded-full bg-emerald-600 flex items-center justify-center text-xs font-bold">
+            AD
           </div>
           <div className="flex flex-col">
-            <span className="text-sm font-semibold">Quản Trị Viên</span>
-            <span className="text-xs text-slate-500">Hệ thống</span>
+            <span className="text-xs font-bold">Quản trị viên</span>
+            <span className="text-[10px] text-emerald-50/50">Admin Account</span>
           </div>
         </div>
+        <button className="w-full flex items-center gap-3 px-4 py-2 rounded-lg text-emerald-50/50 hover:text-white hover:bg-[#006d69]/30 transition-colors text-sm">
+          <LogOut size={18} />
+          <span>Đăng xuất</span>
+        </button>
       </div>
     </aside>
   );

@@ -12,6 +12,7 @@ namespace Coffee.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    [Tags("Phân công ca làm")]
     public class ShiftAssignmentsController : ControllerBase
     {
         private readonly AppDbContext _context;

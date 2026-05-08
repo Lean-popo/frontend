@@ -20,7 +20,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className="scroll-smooth">
+    <html lang="vi" className="scroll-smooth">
       <body className={`${inter.variable} ${outfit.variable} font-sans`}>
         <ConfigProvider>
           <LayoutWrapper>

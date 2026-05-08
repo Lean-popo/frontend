@@ -12,6 +12,7 @@ namespace Coffee.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    [Tags("Phân quyền người dùng")]
     public class UserRolesController : ControllerBase
     {
         private readonly AppDbContext _context;

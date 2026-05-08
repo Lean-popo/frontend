@@ -12,6 +12,7 @@ namespace Coffee.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    [Tags("Quản lý chấm công")]
     public class AttendancesController : ControllerBase
     {
         private readonly AppDbContext _context;
@@ -23,6 +24,7 @@ namespace Coffee.Controllers
 
         // GET: api/Attendances
         [HttpGet]
+        [EndpointSummary("Lấy danh sách chấm công")]
         public async Task<ActionResult<IEnumerable<Attendance>>> GetAttendances()
         {
             return await _context.Attendances.Include(a => a.User).Include(a => a.Shift).ToListAsync();
@@ -30,6 +32,7 @@ namespace Coffee.Controllers
 
         // GET: api/Attendances/5
         [HttpGet("{id}")]
+        [EndpointSummary("Lấy chi tiết chấm công theo ID")]
         public async Task<ActionResult<Attendance>> GetAttendance(int id)
         {
             var attendance = await _context.Attendances.Include(a => a.User).Include(a => a.Shift).FirstOrDefaultAsync(m => m.Id == id);
@@ -44,6 +47,7 @@ namespace Coffee.Controllers
 
         // PUT: api/Attendances/5
         [HttpPut("{id}")]
+        [EndpointSummary("Cập nhật thông tin chấm công")]
         public async Task<IActionResult> PutAttendance(int id, Attendance attendance)
         {
             if (id != attendance.Id)
@@ -74,6 +78,7 @@ namespace Coffee.Controllers
 
         // POST: api/Attendances
         [HttpPost]
+        [EndpointSummary("Tạo mới lượt chấm công")]
         public async Task<ActionResult<Attendance>> PostAttendance(Attendance attendance)
         {
             _context.Attendances.Add(attendance);
@@ -84,6 +89,7 @@ namespace Coffee.Controllers
 
         // DELETE: api/Attendances/5
         [HttpDelete("{id}")]
+        [EndpointSummary("Xóa lượt chấm công")]
         public async Task<IActionResult> DeleteAttendance(int id)
         {
             var attendance = await _context.Attendances.FindAsync(id);

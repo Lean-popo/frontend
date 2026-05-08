@@ -72,7 +72,7 @@ export default async function Dashboard() {
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-        <div className="lg:col-span-2 glass rounded-3xl p-8 min-h-[400px]">
+        <div className="lg:col-span-2 bg-white rounded-3xl p-8 min-h-[400px] shadow-sm border border-slate-200">
           <h3 className="text-xl font-bold mb-6">Xu Hướng Chấm Công</h3>
           <div className="h-64 flex items-end gap-4 px-4">
             {[40, 60, 45, 90, 65, 80, 50, 70, 85, 60, 75, 95].map((h, i) => (
@@ -89,7 +89,7 @@ export default async function Dashboard() {
           </div>
         </div>
 
-        <div className="glass rounded-3xl p-8">
+        <div className="bg-white rounded-3xl p-8 shadow-sm border border-slate-200">
           <h3 className="text-xl font-bold mb-6">Hoạt Động Gần Đây</h3>
           <div className="space-y-6">
             {[
@@ -118,7 +118,7 @@ export default async function Dashboard() {
 
 function StatsCard({ title, value, change, isUp, icon: Icon, color }: any) {
   return (
-    <div className="glass p-6 rounded-3xl hover:translate-y-[-4px] transition-all duration-300 group">
+    <div className="bg-white p-6 rounded-3xl hover:translate-y-[-4px] transition-all duration-300 group shadow-sm border border-slate-200">
       <div className="flex justify-between items-start mb-4">
         <div className={`p-3 ${color} text-white rounded-2xl shadow-lg`}>
           <Icon size={24} />

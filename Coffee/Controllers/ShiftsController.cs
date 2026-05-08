@@ -12,6 +12,7 @@ namespace Coffee.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    [Tags("Quản lý ca làm")]
     public class ShiftsController : ControllerBase
     {
         private readonly AppDbContext _context;
@@ -23,6 +24,7 @@ namespace Coffee.Controllers
 
         // GET: api/Shifts
         [HttpGet]
+        [EndpointSummary("Lấy danh sách ca làm việc")]
         public async Task<ActionResult<IEnumerable<Shift>>> GetShifts()
         {
             return await _context.Shifts.ToListAsync();
@@ -30,6 +32,7 @@ namespace Coffee.Controllers
 
         // GET: api/Shifts/5
         [HttpGet("{id}")]
+        [EndpointSummary("Lấy chi tiết ca làm theo ID")]
         public async Task<ActionResult<Shift>> GetShift(int id)
         {
             var shift = await _context.Shifts.FindAsync(id);
@@ -44,6 +47,7 @@ namespace Coffee.Controllers
 
         // PUT: api/Shifts/5
         [HttpPut("{id}")]
+        [EndpointSummary("Cập nhật thông tin ca làm")]
         public async Task<IActionResult> PutShift(int id, Shift shift)
         {
             if (id != shift.Id)
@@ -74,6 +78,7 @@ namespace Coffee.Controllers
 
         // POST: api/Shifts
         [HttpPost]
+        [EndpointSummary("Thêm mới ca làm việc")]
         public async Task<ActionResult<Shift>> PostShift(Shift shift)
         {
             _context.Shifts.Add(shift);
@@ -84,6 +89,7 @@ namespace Coffee.Controllers
 
         // DELETE: api/Shifts/5
         [HttpDelete("{id}")]
+        [EndpointSummary("Xóa ca làm việc")]
         public async Task<IActionResult> DeleteShift(int id)
         {
             var shift = await _context.Shifts.FindAsync(id);

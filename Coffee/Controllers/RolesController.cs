@@ -12,6 +12,7 @@ namespace Coffee.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    [Tags("Cấu hình vai trò")]
     public class RolesController : ControllerBase
     {
         private readonly AppDbContext _context;

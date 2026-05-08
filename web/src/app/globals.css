@@ -3,31 +3,37 @@
 @theme {
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
+  --color-primary: var(--primary);
+  --color-primary-dark: var(--primary-dark);
 }
 
 :root {
-  --background: #f8fafc;
+  --background: #f1f5f9;
   --foreground: #0f172a;
-  --primary: #6366f1;
+  --primary: #006d69;
+  --primary-dark: #004d4a;
   --primary-foreground: #ffffff;
   --card: #ffffff;
   --card-foreground: #0f172a;
   --border: #e2e8f0;
   --input: #e2e8f0;
-  --ring: #6366f1;
-  --radius: 0.75rem;
+  --ring: #006d69;
+  --radius: 0.5rem;
+  --sidebar-bg: #004d4a;
+  --sidebar-text: #ffffff;
 }
 
 .dark {
   --background: #020617;
   --foreground: #f8fafc;
-  --primary: #818cf8;
+  --primary: #2dd4bf;
   --primary-foreground: #020617;
   --card: #0f172a;
   --card-foreground: #f8fafc;
   --border: #1e293b;
   --input: #1e293b;
-  --ring: #818cf8;
+  --ring: #2dd4bf;
+  --sidebar-bg: #004d4a;
 }
 
 @layer base {

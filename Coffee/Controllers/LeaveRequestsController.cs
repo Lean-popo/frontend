@@ -12,6 +12,7 @@ namespace Coffee.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    [Tags("Quản lý nghỉ phép")]
     public class LeaveRequestsController : ControllerBase
     {
         private readonly AppDbContext _context;
