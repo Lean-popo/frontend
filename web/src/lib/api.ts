@@ -60,6 +60,12 @@ export const api = {
   updateReward: (id: number, data: any) => fetchApi(`/Rewards/${id}`, { method: "PUT", body: JSON.stringify(data) }),
   deleteReward: (id: number) => fetchApi(`/Rewards/${id}`, { method: "DELETE" }),
 
+  // Leave Requests
+  getLeaveRequests: () => fetchApi("/LeaveRequests"),
+  createLeaveRequest: (data: any) => fetchApi("/LeaveRequests", { method: "POST", body: JSON.stringify(data) }),
+  updateLeaveRequest: (id: number, data: any) => fetchApi(`/LeaveRequests/${id}`, { method: "PUT", body: JSON.stringify(data) }),
+  deleteLeaveRequest: (id: number) => fetchApi(`/LeaveRequests/${id}`, { method: "DELETE" }),
+
   // General
   getShifts: () => fetchApi("/Shifts"),
   getRoles: () => fetchApi("/Roles"),
